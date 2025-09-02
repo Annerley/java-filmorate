@@ -32,13 +32,21 @@ public class UserController {
     }
 
     @PutMapping()
-    public User updateUser(@Valid @RequestBody User user) {
-        validate(user);
+    public User updateUser(@RequestBody User user) {
         User oldUser = users.get(user.getId());
-        oldUser.setBirthday(user.getBirthday());
-        oldUser.setLogin(user.getLogin());
-        oldUser.setName(user.getName());
-        oldUser.setEmail(user.getEmail());
+        if (user.getBirthday().isBefore(LocalDate.now())) {
+            oldUser.setBirthday(user.getBirthday());
+        }
+        if (!user.getLogin().isBlank()) {
+            oldUser.setLogin(user.getLogin());
+        }
+        if (!user.getName().isBlank()) {
+            oldUser.setName(user.getName());
+        }
+        if (user.getEmail().contains("@") && !user.getEmail().isBlank()) {
+            oldUser.setEmail(user.getEmail());
+        }
+
         return oldUser;
     }
 
@@ -52,16 +60,16 @@ public class UserController {
     }
 
     public void validate(User user) {
-        if (user.getEmail() == null || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
+        if (!user.getEmail().contains("@") || user.getEmail().isBlank()) {
             throw new ValidationException("Неправильный email");
         }
-        if (user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             throw new ValidationException("Логин должен быть не пустой и не может содержть пробелы");
         }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getBirthday() == null || user.getBirthday().isAfter(LocalDate.now())) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения должна быть раньше настоящего времени");
         }
 
