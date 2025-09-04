@@ -34,7 +34,7 @@ public class UserController {
     @PutMapping()
     public User updateUser(@RequestBody User user) {
         User oldUser = users.get(user.getId());
-        if (user.getBirthday().isBefore(LocalDate.now())) {
+        if (user.getBirthday().isBefore(LocalDate.now()) && user.getBirthday() != null) {
             oldUser.setBirthday(user.getBirthday());
         }
         if (!user.getLogin().isBlank()) {

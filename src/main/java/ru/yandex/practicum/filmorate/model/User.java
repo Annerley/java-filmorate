@@ -12,12 +12,12 @@ import java.time.LocalDate;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    private long id;
+    long id;
     @Email
-    private String email;
+    String email;
     @NotBlank
-    private String login;
-    private String name;
+    String login;
+    String name;
     @NotNull
-    private LocalDate birthday;
+    LocalDate birthday;
 }

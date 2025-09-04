@@ -37,11 +37,10 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
         Film oldFilm = films.get(film.getId());
-        if (!(film.getDescription() != null && film.getDescription().length() > 200)) {
-
+        if (film.getDescription() != null && film.getDescription().length() > 200) {
             oldFilm.setDescription(film.getDescription());
         }
-        if (film.getReleaseDate().isAfter(FIRST_FILM)) {
+        if (film.getReleaseDate() != null && film.getReleaseDate().isAfter(FIRST_FILM)) {
             oldFilm.setReleaseDate(film.getReleaseDate());
         }
         if (!film.getName().isBlank()) {
