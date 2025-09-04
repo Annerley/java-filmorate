@@ -37,7 +37,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
         Film oldFilm = films.get(film.getId());
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
+        if (film.getDescription() != null && film.getDescription().length() <= 200) {
             oldFilm.setDescription(film.getDescription());
         }
         if (film.getReleaseDate() != null && film.getReleaseDate().isAfter(FIRST_FILM)) {
@@ -66,7 +66,7 @@ public class FilmController {
 
     public void validate(Film film) {
         if (film.getDescription() != null && film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина оаписания - 200 символов");
+            throw new ValidationException("Максимальная длина описания - 200 символов");
         }
         if (film.getReleaseDate().isBefore(FIRST_FILM)) {
             throw new ValidationException("Дата релиза должна быть позже 1895.12.28");
