@@ -1,79 +1,65 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-
-import java.util.Map;
-
+import java.util.List;
 
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
+
+    private final FilmStorage filmStorage;
+    private final FilmService filmService;
 
     @GetMapping
     public Collection<Film> getAllFilms() {
-        return films.values();
+        return filmStorage.findAll();
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        validate(film);
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        return film;
+        return filmStorage.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        Film oldFilm = films.get(film.getId());
-        if (film.getDescription() != null && film.getDescription().length() <= 200) {
-            oldFilm.setDescription(film.getDescription());
-        }
-        if (film.getReleaseDate() != null && film.getReleaseDate().isAfter(FIRST_FILM)) {
-            oldFilm.setReleaseDate(film.getReleaseDate());
-        }
-        if (!film.getName().isBlank()) {
-            oldFilm.setName(film.getName());
-        }
-        if (film.getDuration() > 0) {
+        return filmStorage.updateFilm(film);
 
-            oldFilm.setDuration(film.getDuration());
-        }
-
-        films.put(film.getId(), oldFilm);
-        return oldFilm;
     }
 
-    private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable("id") Long id) {
+        return filmStorage.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Пользователь с id=" + id + " не найден"));
     }
 
-    public void validate(Film film) {
-        if (film.getDescription() != null && film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания - 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(FIRST_FILM)) {
-            throw new ValidationException("Дата релиза должна быть позже 1895.12.28");
-        }
-        if (film.getDuration() <= 0) {
-            throw new ValidationException("Длительность фильма должна быть больше нуля");
-        }
+    @PutMapping("/{id}/like/{userId}")
+    public void likeFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> showTop(@RequestParam(name = "count", defaultValue = "10") Long count) {
+        return filmService.showTenMostPopular(count);
     }
 
 }
