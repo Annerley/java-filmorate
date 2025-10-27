@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -45,5 +46,25 @@ public class FilmService {
                 .sorted((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()))
                 .limit(count)
                 .toList();
+    }
+
+    public Optional<Film> findById(Long id) {
+        return storage.findById(id);
+    }
+
+    public List<Film> findAll() {
+        return storage.findAll();
+    }
+
+    public Film addFilm(Film film) {
+        return storage.addFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return storage.updateFilm(film);
+    }
+
+    public void deleteFilm(Film film) {
+        storage.deleteFilm(film);
     }
 }

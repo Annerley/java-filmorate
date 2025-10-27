@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,27 +18,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @PostMapping()
     public User addUser(@Valid @RequestBody User user) {
-        return userStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping()
     public User updateUser(@RequestBody User user) {
-        return userStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User getById(@PathVariable("id") Long id) {
-        return userStorage.findById(id)
+        return userService.findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Пользователь с id=" + id + " не найден"));

@@ -77,4 +77,24 @@ public class UserService {
                         .orElseThrow(() -> new NotFoundException("Пользователь " + id + " не найден")))
                 .toList();
     }
+
+    public Optional<User> findById(Long id) {
+        return storage.findById(id);
+    }
+
+    public Collection<User> findAll() {
+        return storage.findAll();
+    }
+
+    public User addUser(User user) {
+        return storage.addUser(user);
+    }
+
+    public User updateUser(User user) {
+        return storage.updateUser(user);
+    }
+
+    public void deleteUser(User user) {
+        storage.deleteUser(user);
+    }
 }
