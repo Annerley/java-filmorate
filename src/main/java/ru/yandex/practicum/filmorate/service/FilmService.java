@@ -48,8 +48,9 @@ public class FilmService {
                 .toList();
     }
 
-    public Optional<Film> findById(Long id) {
-        return storage.findById(id);
+    public Film findById(Long id) {
+        return storage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм с id=" + id + " не найден"));
     }
 
     public List<Film> findAll() {
@@ -64,7 +65,11 @@ public class FilmService {
         return storage.updateFilm(film);
     }
 
+    //на будущее
+    /*
     public void deleteFilm(Film film) {
         storage.deleteFilm(film);
     }
+
+     */
 }

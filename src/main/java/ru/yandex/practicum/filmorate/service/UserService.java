@@ -78,8 +78,9 @@ public class UserService {
                 .toList();
     }
 
-    public Optional<User> findById(Long id) {
-        return storage.findById(id);
+    public User findById(Long id) {
+        return storage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + id + " не найден"));
     }
 
     public Collection<User> findAll() {
@@ -94,7 +95,10 @@ public class UserService {
         return storage.updateUser(user);
     }
 
+    /*
     public void deleteUser(User user) {
         storage.deleteUser(user);
     }
+
+     */
 }

@@ -39,10 +39,7 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getById(@PathVariable("id") Long id) {
-        return filmService.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Пользователь с id=" + id + " не найден"));
+        return filmService.findById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
